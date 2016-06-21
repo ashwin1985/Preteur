@@ -1,0 +1,7 @@
+dependencies {
+    //dev
+    compile project(":ach-wrapper")
+    compile "com.orientechnologies:orientdb-core:2.2.2"
+    compile "com.orientechnologies:orient-commons:2.0-M1"
+    compile "com.orientechnologies:orientdb-graphdb:2.2.2"
+}

@@ -1,0 +1,22 @@
+allprojects {
+  group 'com.preteur'
+  version '1.0-SNAPSHOT'
+
+  repositories {
+      mavenCentral()
+      mavenLocal()
+  }
+}
+
+subprojects {
+  apply plugin: 'java'
+
+  dependencies {
+      //test
+      testCompile "junit:junit:4.11"
+  }
+}
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '2.14'
+}
