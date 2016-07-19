@@ -1,7 +1,13 @@
 dependencies {
     //dev
     compile project(":ach-wrapper")
-    compile "com.orientechnologies:orientdb-core:2.2.2"
-    compile "com.orientechnologies:orient-commons:2.0-M1"
-    compile "com.orientechnologies:orientdb-graphdb:2.2.2"
+    compile project(":tauth")
+    compile "com.orientechnologies:orientdb-core:2.2.4"
+    compile "com.orientechnologies:orientdb-client:2.2.4"
+    compile "com.orientechnologies:orientdb-lucene:2.2.4"
+    compile "com.orientechnologies:orientdb-distributed:2.2.4"
+    compile "com.orientechnologies:orientdb-graphdb:2.2.4"
+    compile "com.orientechnologies:orientdb-object:2.2.4"
+    compile "com.orientechnologies:orientdb-server:2.2.4"
+    compile "com.orientechnologies:orientdb-tools:2.2.4"
 }

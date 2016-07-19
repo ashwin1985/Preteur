@@ -25,4 +25,18 @@ public class Result<T> {
     public static <T> Result<T> failure(Exception e) {
         return new Result<T>(false,e.toString(),e,null);
     }
+
+    public boolean isStatus() { return status; }
+
+    public String getFailureReason() {
+        return failureReason;
+    }
+
+    public Exception getE() {
+        return e;
+    }
+
+    public T getResult() {
+        return result;
+    }
 }

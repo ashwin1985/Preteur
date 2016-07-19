@@ -4,6 +4,7 @@ import com.preteur.repo.orientdb.api.IPreteur;
 import com.preteur.repo.orientdb.dao.PreteurDao;
 import com.preteur.repo.orientdb.dto.UserDto;
 import com.preteur.repo.orientdb.model.Relations;
+import com.preteur.repo.orientdb.model.User;
 import com.preteur.repo.orientdb.result.Result;
 
 import java.math.BigDecimal;
@@ -19,8 +20,18 @@ public class Preteur implements IPreteur {
     public Preteur(PreteurDao idWrapper) { this.dao = idWrapper; }
 
     @Override
-    public Result<Boolean> createUser(UserDto userDto) {
-        return dao.createUser(userDto);
+    public Result<Boolean> createUser(User user) {
+        return dao.createUser(user);
+    }
+
+    @Override
+    public Result<Boolean> authenticate(String phoneNumber, String password) {
+        return dao.authenticate(phoneNumber,password);
+    }
+
+    @Override
+    public Result<String> createToken(String phoneNumber) {
+        return dao.createToken(phoneNumber);
     }
 
     @Override

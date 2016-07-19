@@ -2,3 +2,6 @@ rootProject.name = 'preteur-server'
 
 include 'ach-wrapper'
 include 'repo'
+include 'server'
+include 'tauth'
+

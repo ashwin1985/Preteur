@@ -9,29 +9,26 @@ import com.preteur.ach.model.Transfer;
 import com.preteur.repo.orientdb.dto.AchUserDto;
 import com.preteur.repo.orientdb.dto.UserDto;
 import com.preteur.repo.orientdb.model.Relations;
+import com.preteur.repo.orientdb.model.User;
 import com.preteur.repo.orientdb.result.Result;
 import com.preteur.repo.orientdb.transaction.TransactionalTemplate;
 import com.preteur.repo.orientdb.util.Helper;
 
+import com.preteur.tauth.Authorize;
 import com.tinkerpop.blueprints.Vertex;
 import com.tinkerpop.blueprints.impls.orient.OrientVertex;
 
+import java.security.SecureRandom;
 import java.util.*;
 
 public class PreteurDao {
 
-    public Result<Boolean> createUser(UserDto userDto) {
+    public Result<Boolean> createUser(User user) {
         TransactionalTemplate<Boolean> tr = new TransactionalTemplate<>();
         return tr.doWork(graph -> {
-            //ach calls
-            AchUserDto achUserDto = createACHUser(userDto);
-            userDto.getUser().setAchFundingSourcesId(achUserDto.getAchFundingSourcesId());
-            userDto.getUser().setAchUserId(achUserDto.getAchUserId());
-            userDto.getUser().setCreatedDate(achUserDto.getAchUserCreatedDate());
-
             Vertex v = graph.addVertex("class:User");
 
-            Map<String, Object> map = Helper.convertObjectToMap(userDto.getUser());
+            Map<String, Object> map = Helper.convertObjectToMap(user);
             for (String k : map.keySet()) {
                 v.setProperty(k, map.get(k));
             }
@@ -40,6 +37,77 @@ public class PreteurDao {
 
             return true;
         });
+    }
+
+    public Result<Boolean> authenticate (String phone, String password) {
+        TransactionalTemplate<String> tr = new TransactionalTemplate<>();
+        Result<String> usersResult = tr.doWork(graph -> {
+            OSQLSynchQuery q = new OSQLSynchQuery("SELECT FROM User " +
+                    "WHERE phone = ?");
+            Iterable<OrientVertex> users = graph.command(q).execute(phone);
+
+            String result = null;
+            int count = 0;
+
+            for(OrientVertex u : users) {
+                if(count > 1) {
+                    // throw exception
+                }
+
+                result = (String) u.getProperties().get("password");
+                count++;
+            }
+
+            graph.commit();
+
+            return result;
+        });
+
+        if (!usersResult.isStatus()) {
+            return Result.failure("Something went wrong in querying the DB");
+        }
+
+        String ps = usersResult.getResult();
+
+        if(ps == null) {
+            return Result.failure("No user exists for phone number");
+        }
+
+        return Result.success(password.equals(ps));
+    }
+
+    public Result<String> createToken(String phone) {
+        byte[] secret = new byte[64];
+
+        SecureRandom random = new SecureRandom();
+        random.nextBytes(secret);
+
+        String token = new Authorize().issueToken(phone, secret);
+
+        TransactionalTemplate<Boolean> tr = new TransactionalTemplate<>();
+        Result<Boolean> usersResult = tr.doWork(graph -> {
+            OSQLSynchQuery q = new OSQLSynchQuery("SELECT FROM User " +
+                    "WHERE phone = ?");
+            Iterable<OrientVertex> users = graph.command(q).execute(phone);
+
+            int count = 0;
+
+            for(OrientVertex result : users) {
+                if(count > 1) {
+                    // throw exception
+                }
+
+                result.getProperties().put("secret", secret);
+                count++;
+            }
+
+            graph.commit();
+
+            return true;
+        });
+
+        return usersResult.isStatus() ? Result.success(token)
+                : Result.failure("Failed to create an access token");
     }
 
     public Result<Boolean> updateNetwork(String primaryUser, String secondUser,
@@ -71,7 +139,7 @@ public class PreteurDao {
             OrientVertex borrowerVertex = users.iterator().next();
 
             String lenderFSId = (String) lenderVertex.getProperties().get("achFundingSourcesId");
-            String borrowerFSId = (String) borrowerVertex.getProperties().get("achFundingSourcesId");
+            String borrowerFSId = (String) borrowerVertex.getProperties().get("achUserId");
 
             if(lenderFSId == null) {
                 throw new Exception("No lender funding source");
@@ -111,9 +179,9 @@ public class PreteurDao {
 
     private AchUserDto createACHUser(UserDto userDto) throws Exception {
         List<FundingSource> list = new ArrayList<>();
-        FundingSource fs = new FundingSource(null, userDto.getRoutingNumber(), userDto.getAccountNumber(),
-                userDto.getType(), userDto.getBankName());
-        list.add(fs);
+//        FundingSource fs = new FundingSource(null, userDto.getRoutingNumber(), userDto.getAccountNumber(),
+//                userDto.getType(), userDto.getBankName());
+//        list.add(fs);
 
         com.preteur.ach.model.User achUser =
                 new com.preteur.ach.model.User(null,userDto.getUser().getFristName(),
@@ -127,7 +195,7 @@ public class PreteurDao {
         IAchClient client = new AchClient();
         achUser = client.addUser(achUser);
 
-        return new AchUserDto(achUser.getAchUserId(), new Date(), fs.getFsId());
+        return new AchUserDto(achUser.getAchUserId(), new Date(), null);
     }
 
 }

@@ -11,6 +11,7 @@ public class User {
     private String emailAddress;
     private String dob;
     private String password;
+    private byte[] secret;
     private String ipAddress;
     private String address1;
     private String address2;
@@ -76,6 +77,10 @@ public class User {
     public String getPassword() {
         return password;
     }
+
+    public byte[] getSecret() { return secret; }
+
+    public void setSecret(byte[] secret) { this.secret = secret; }
 
     public void setPassword(String password) {
         this.password = password;
