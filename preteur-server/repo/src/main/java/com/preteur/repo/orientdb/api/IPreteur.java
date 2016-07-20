@@ -10,8 +10,8 @@ import java.math.BigDecimal;
 public interface IPreteur {
 
     public Result<Boolean> createUser(User user);
-    public Result<Boolean> authenticate(String phoneNumber, String password);
-    public Result<String> createToken(String phoneNumber);
+    public Result<Object> getUserProperty(String phoneNumber, String propertyName);
+    public Result<Boolean> updateUserSecret(String phoneNumber, Object secret);
     public Result<Boolean> addUserToCircle(String firstUser,
                                 String secondUser, Relations.NetworkTypes networkType);
     public Result<Boolean> addBondBetweenUsers(String lender, String borrower, int principle);

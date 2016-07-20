@@ -25,13 +25,13 @@ public class Preteur implements IPreteur {
     }
 
     @Override
-    public Result<Boolean> authenticate(String phoneNumber, String password) {
-        return dao.authenticate(phoneNumber,password);
+    public Result<Object> getUserProperty(String phoneNumber, String propertyName) {
+        return dao.getUserProperty(phoneNumber,propertyName);
     }
 
     @Override
-    public Result<String> createToken(String phoneNumber) {
-        return dao.createToken(phoneNumber);
+    public Result<Boolean> updateUserSecret(String phoneNumber, Object secret) {
+        return dao.updateUserSecret(phoneNumber, secret);
     }
 
     @Override

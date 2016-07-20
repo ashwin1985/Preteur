@@ -1,5 +1,6 @@
 package com.preteur.repo.orientdb.dao;
 
+import com.orientechnologies.orient.core.sql.OCommandSQL;
 import com.orientechnologies.orient.core.sql.query.OSQLSynchQuery;
 
 import com.preteur.ach.api.IAchClient;
@@ -14,7 +15,6 @@ import com.preteur.repo.orientdb.result.Result;
 import com.preteur.repo.orientdb.transaction.TransactionalTemplate;
 import com.preteur.repo.orientdb.util.Helper;
 
-import com.preteur.tauth.Authorize;
 import com.tinkerpop.blueprints.Vertex;
 import com.tinkerpop.blueprints.impls.orient.OrientVertex;
 
@@ -39,14 +39,28 @@ public class PreteurDao {
         });
     }
 
-    public Result<Boolean> authenticate (String phone, String password) {
-        TransactionalTemplate<String> tr = new TransactionalTemplate<>();
-        Result<String> usersResult = tr.doWork(graph -> {
+    public Result<Boolean> updateUserSecret(String phone, Object secret) {
+        TransactionalTemplate<Boolean> tr = new TransactionalTemplate<>();
+        return tr.doWork(graph -> {
+            OCommandSQL q = new OCommandSQL("UPDATE User SET secret = ? " +
+                    "WHERE phone = ?");
+            graph.command(q).execute(secret, phone);
+
+            graph.commit();
+
+            return true;
+        });
+
+    }
+
+    public Result<Object> getUserProperty(String phone, String propertyName) {
+        TransactionalTemplate<Object> tr = new TransactionalTemplate<>();
+        return tr.doWork(graph -> {
             OSQLSynchQuery q = new OSQLSynchQuery("SELECT FROM User " +
                     "WHERE phone = ?");
             Iterable<OrientVertex> users = graph.command(q).execute(phone);
 
-            String result = null;
+            Object result = null;
             int count = 0;
 
             for(OrientVertex u : users) {
@@ -54,7 +68,7 @@ public class PreteurDao {
                     // throw exception
                 }
 
-                result = (String) u.getProperties().get("password");
+                result = u.getProperties().get(propertyName);
                 count++;
             }
 
@@ -62,52 +76,6 @@ public class PreteurDao {
 
             return result;
         });
-
-        if (!usersResult.isStatus()) {
-            return Result.failure("Something went wrong in querying the DB");
-        }
-
-        String ps = usersResult.getResult();
-
-        if(ps == null) {
-            return Result.failure("No user exists for phone number");
-        }
-
-        return Result.success(password.equals(ps));
-    }
-
-    public Result<String> createToken(String phone) {
-        byte[] secret = new byte[64];
-
-        SecureRandom random = new SecureRandom();
-        random.nextBytes(secret);
-
-        String token = new Authorize().issueToken(phone, secret);
-
-        TransactionalTemplate<Boolean> tr = new TransactionalTemplate<>();
-        Result<Boolean> usersResult = tr.doWork(graph -> {
-            OSQLSynchQuery q = new OSQLSynchQuery("SELECT FROM User " +
-                    "WHERE phone = ?");
-            Iterable<OrientVertex> users = graph.command(q).execute(phone);
-
-            int count = 0;
-
-            for(OrientVertex result : users) {
-                if(count > 1) {
-                    // throw exception
-                }
-
-                result.getProperties().put("secret", secret);
-                count++;
-            }
-
-            graph.commit();
-
-            return true;
-        });
-
-        return usersResult.isStatus() ? Result.success(token)
-                : Result.failure("Failed to create an access token");
     }
 
     public Result<Boolean> updateNetwork(String primaryUser, String secondUser,

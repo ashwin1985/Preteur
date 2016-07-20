@@ -20,7 +20,7 @@ public class TokenHandler implements Handler {
     public void handle(Context ctx) throws Exception {
         if(ctx.getRequest().getMethod().isPost()) {
             String auth = ctx.getRequest().getHeaders().get("Authorization");
-            String[] values = Helper.parseAuthHeader(auth);
+            String[] values = Helper.parseAuthHeader(auth, false);
             boolean success = false;
 
             if(values != null && values.length == 2) {

@@ -1,7 +1,6 @@
 dependencies {
     //dev
     compile project(":ach-wrapper")
-    compile project(":tauth")
     compile "com.orientechnologies:orientdb-core:2.2.4"
     compile "com.orientechnologies:orientdb-client:2.2.4"
     compile "com.orientechnologies:orientdb-lucene:2.2.4"
