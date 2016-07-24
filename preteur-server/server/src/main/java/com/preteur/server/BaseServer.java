@@ -18,7 +18,7 @@ public class BaseServer {
         RatpackServer.start(s -> s
                 .serverConfig(c -> {
 //                    c.ssl(SSLContexts.sslContext(new File(getClass().getClassLoader()
-//                            .getResource("preteur.jks").getFile()), "Sandhya@9"));
+//                            .getResource("preteur.jks").getFile()), "xxxxxxxx"));
                     c.publicAddress(new URI("http://localhost:5050"));
                 })
                 .registry(Guice.registry(b -> b.module(BindModule.class)))
