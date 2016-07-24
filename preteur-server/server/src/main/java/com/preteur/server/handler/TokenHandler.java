@@ -28,7 +28,6 @@ public class TokenHandler implements Handler {
                     String token = iauth.createToken(values[0]);
                     if(token != null && !token.isEmpty()) {
                         success = true;
-                        ctx.getResponse().getHeaders().add("Access-Control-Allow-Origin","*");
                         ctx.getResponse().status(200).send("application/json", "{ \"token\":"
                                 + "\""+ token +"\" }");
                     }
@@ -38,14 +37,12 @@ public class TokenHandler implements Handler {
                 if(values != null) {
                     if(iauth.removeToken(values[0])) {
                         success = true;
-                        ctx.getResponse().getHeaders().add("Access-Control-Allow-Origin","*");
                         ctx.getResponse().status(200).send();
                     }
                 }
             }
 
             if(!success) {
-                ctx.getResponse().getHeaders().add("Access-Control-Allow-Origin","*");
                 ctx.getResponse().status(400).send();
             }
         }

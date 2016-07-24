@@ -38,7 +38,6 @@ public class AuthHandler implements Handler {
         }
 
         if(!success) {
-            ctx.getResponse().getHeaders().add("Access-Control-Allow-Origin","*");
             ctx.getResponse().status(401).send();
         }
     }

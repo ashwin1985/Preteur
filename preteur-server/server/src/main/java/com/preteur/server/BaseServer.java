@@ -1,9 +1,6 @@
 package com.preteur.server;
 
-import com.preteur.server.handler.AuthHandler;
-import com.preteur.server.handler.OptionHandler;
-import com.preteur.server.handler.TokenHandler;
-import com.preteur.server.handler.UserHandler;
+import com.preteur.server.handler.*;
 import ratpack.guice.Guice;
 import ratpack.server.RatpackServer;
 

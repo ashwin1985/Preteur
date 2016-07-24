@@ -15,6 +15,7 @@ public class OptionHandler implements Handler {
                     .add("Access-Control-Allow-Origin", "*");
             ctx.getResponse().status(200).send();
         } else {
+            ctx.getResponse().getHeaders().add("Access-Control-Allow-Origin","*");
             ctx.next();
         }
     }

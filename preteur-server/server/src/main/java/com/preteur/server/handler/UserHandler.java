@@ -20,7 +20,6 @@ public class UserHandler implements Handler{
         if(ctx.getRequest().getMethod().isPost()) {
             ctx.parse(User.class).then(u -> {
                 if(iuser.createUser(u)) {
-                    ctx.getResponse().getHeaders().add("Access-Control-Allow-Origin","*");
                     ctx.getResponse().status(200).send();
                 } else {
                     ctx.getResponse().status(400).send();
