@@ -6,7 +6,7 @@ import com.tinkerpop.blueprints.impls.orient.OrientGraphFactory;
 
 public class TransactionalTemplate<T> {
 
-    private static OrientGraphFactory factory = new OrientGraphFactory("plocal:/home/ashwin/orientdb");
+    private static OrientGraphFactory factory = new OrientGraphFactory("plocal:/data/orientdb");
 
     public Result<T> doWork(WorkUnit<T> workUnit) {
         OrientGraph graph = factory.getTx();

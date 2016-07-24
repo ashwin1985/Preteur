@@ -1,12 +1,14 @@
 package com.preteur.server.service.impl;
 
 import com.preteur.repo.orientdb.api.IPreteur;
+import com.preteur.repo.orientdb.dto.TokenInfo;
 import com.preteur.repo.orientdb.result.Result;
 import com.preteur.server.service.IAuthService;
 import com.preteur.tauth.Authorize;
 
 import javax.inject.Inject;
 import java.security.SecureRandom;
+import java.util.Date;
 
 public class AuthService implements IAuthService {
 
@@ -38,14 +40,32 @@ public class AuthService implements IAuthService {
 
     @Override
     public boolean tokenAuthentication(String userName, String token) {
-        Result<Object> secretResult = ipreteur.getUserProperty(userName, "secret");
+        Result<TokenInfo> secretResult = ipreteur.getUserTokenInfo(userName);
 
         if(!secretResult.isStatus()) {
             System.out.println(secretResult.getFailureReason());
             return false;
         }
 
-        return new Authorize().validateToken(token, (byte[]) secretResult.getResult());
+        if(secretResult.getResult() == null
+                || secretResult.getResult().getSecret() == null) {
+            System.out.println("No secret key");
+            return false;
+        }
+
+        if(secretResult.getResult().getSecretExpDate() == null) {
+            System.out.println("Token Expired");
+            return false;
+        }
+
+        if(secretResult.getResult().getSecretExpDate().getTime()
+                < new Date().getTime()) {
+            System.out.println("Token Expired");
+            removeToken(token);
+            return false;
+        }
+
+        return new Authorize().validateToken(token, secretResult.getResult().getSecret());
     }
 
     @Override
@@ -57,7 +77,10 @@ public class AuthService implements IAuthService {
 
         String token = new Authorize().issueToken(userName, secret);
 
-        Result<Boolean> result = ipreteur.updateUserSecret(userName, secret);
+        Date expiry = new Date(new Date().getTime() + (1800 * 1000));
+
+        Result<Boolean> result = ipreteur.updateUserTokenInfo(userName,
+                new TokenInfo(secret, expiry));
 
         if(!result.isStatus()) {
             System.out.println(result.getFailureReason());
@@ -65,5 +88,16 @@ public class AuthService implements IAuthService {
         }
 
         return token;
+    }
+
+    @Override
+    public boolean removeToken(String userName) {
+        Result<Boolean> result = ipreteur.updateUserTokenInfo(userName, new TokenInfo());
+
+        if(!result.isStatus()) {
+            System.out.println(result.getFailureReason());
+        }
+
+        return result.isStatus();
     }
 }

@@ -27,12 +27,6 @@ public class UserHandler implements Handler{
                 }
             });
 
-        } else if(ctx.getRequest().getMethod().isOptions()) {
-            ctx.getResponse().getHeaders()
-                    .add("Access-Control-Allow-Headers", "Content-Type, Access-Control-Allow-Origin")
-                    .add("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
-                    .add("Access-Control-Allow-Origin", "*");
-            ctx.getResponse().status(200).send();
         }
     }
 }

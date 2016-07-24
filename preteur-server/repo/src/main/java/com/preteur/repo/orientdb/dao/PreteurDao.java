@@ -8,6 +8,7 @@ import com.preteur.ach.dwolla.AchClient;
 import com.preteur.ach.model.FundingSource;
 import com.preteur.ach.model.Transfer;
 import com.preteur.repo.orientdb.dto.AchUserDto;
+import com.preteur.repo.orientdb.dto.TokenInfo;
 import com.preteur.repo.orientdb.dto.UserDto;
 import com.preteur.repo.orientdb.model.Relations;
 import com.preteur.repo.orientdb.model.User;
@@ -18,12 +19,15 @@ import com.preteur.repo.orientdb.util.Helper;
 import com.tinkerpop.blueprints.Vertex;
 import com.tinkerpop.blueprints.impls.orient.OrientVertex;
 
-import java.security.SecureRandom;
 import java.util.*;
 
 public class PreteurDao {
 
     public Result<Boolean> createUser(User user) {
+        Date now = new Date();
+        user.setCreatedDate(now);
+        user.setLastModifiedDate(now);
+
         TransactionalTemplate<Boolean> tr = new TransactionalTemplate<>();
         return tr.doWork(graph -> {
             Vertex v = graph.addVertex("class:User");
@@ -39,18 +43,46 @@ public class PreteurDao {
         });
     }
 
-    public Result<Boolean> updateUserSecret(String phone, Object secret) {
+    public Result<Boolean> updateUserTokenInfo(String phone, TokenInfo tokenInfo) {
         TransactionalTemplate<Boolean> tr = new TransactionalTemplate<>();
         return tr.doWork(graph -> {
             OCommandSQL q = new OCommandSQL("UPDATE User SET secret = ? " +
+                    ", secretExpDate = ? , lastModifiedDate = ? " +
                     "WHERE phone = ?");
-            graph.command(q).execute(secret, phone);
+            graph.command(q).execute(tokenInfo.getSecret(),
+                    tokenInfo.getSecretExpDate(), new Date(), phone);
 
             graph.commit();
 
             return true;
         });
 
+    }
+
+    public Result<TokenInfo> getUserTokenInfo(String phone) {
+        TransactionalTemplate<TokenInfo> tr = new TransactionalTemplate<>();
+        return tr.doWork(graph -> {
+            OSQLSynchQuery q = new OSQLSynchQuery("SELECT FROM User " +
+                    "WHERE phone = ?");
+            Iterable<OrientVertex> users = graph.command(q).execute(phone);
+
+            TokenInfo result = null;
+            int count = 0;
+
+            for(OrientVertex u : users) {
+                if(count > 1) {
+                    // throw exception
+                }
+
+                result = new TokenInfo((byte[]) u.getProperties().get("secret"),
+                        (Date) u.getProperties().get("secretExpDate"));
+                count++;
+            }
+
+            graph.commit();
+
+            return result;
+        });
     }
 
     public Result<Object> getUserProperty(String phone, String propertyName) {

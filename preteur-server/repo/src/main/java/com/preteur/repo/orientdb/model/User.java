@@ -12,6 +12,7 @@ public class User {
     private String dob;
     private String password;
     private byte[] secret;
+    private Date secretExpDate;
     private String ipAddress;
     private String address1;
     private String address2;
@@ -81,6 +82,10 @@ public class User {
     public byte[] getSecret() { return secret; }
 
     public void setSecret(byte[] secret) { this.secret = secret; }
+
+    public Date getSecretExpDate() { return secretExpDate; }
+
+    public void setSecretExpDate(Date secretExpDate) { this.secretExpDate = secretExpDate; }
 
     public void setPassword(String password) {
         this.password = password;
