@@ -25,6 +25,7 @@ public class BaseServer {
                             chain.all(AuthHandler.class);
                             chain.path("logout", TokenHandler.class);
                             chain.path("login", TokenHandler.class);
+                            chain.path("users", UserHandler.class);
                             chain.path("hello", c -> { c.render("Hello World");
                                 System.out.println("Executing hello handler"); });
                         }

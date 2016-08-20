@@ -8,11 +8,13 @@ import com.preteur.repo.orientdb.result.Result;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 public interface IPreteur {
 
     public Result<Boolean> createUser(User user);
+    public Result<List<String>> getAllUsers();
     public Result<Object> getUserProperty(String phoneNumber, String propertyName);
     public Result<TokenInfo> getUserTokenInfo(String phoneNumber);
     public Result<Boolean> updateUserTokenInfo(String phoneNumber, TokenInfo tokenInfo);

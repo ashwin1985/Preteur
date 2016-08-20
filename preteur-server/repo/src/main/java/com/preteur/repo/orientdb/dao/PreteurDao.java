@@ -85,6 +85,24 @@ public class PreteurDao {
         });
     }
 
+    public Result<List<String>> getAllUsers() {
+        TransactionalTemplate<List<String>> tr = new TransactionalTemplate<>();
+        return tr.doWork(graph -> {
+            OSQLSynchQuery q = new OSQLSynchQuery("SELECT FROM User");
+            Iterable<OrientVertex> users = graph.command(q).execute();
+
+            List<String> result = new ArrayList();
+
+            for(OrientVertex u : users) {
+                result.add((String) u.getProperties().get("phone"));
+            }
+
+            graph.commit();
+
+            return result;
+        });
+    }
+
     public Result<Object> getUserProperty(String phone, String propertyName) {
         TransactionalTemplate<Object> tr = new TransactionalTemplate<>();
         return tr.doWork(graph -> {

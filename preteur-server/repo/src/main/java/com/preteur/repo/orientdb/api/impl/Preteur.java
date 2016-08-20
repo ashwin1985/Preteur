@@ -7,6 +7,8 @@ import com.preteur.repo.orientdb.model.Relations;
 import com.preteur.repo.orientdb.model.User;
 import com.preteur.repo.orientdb.result.Result;
 
+import java.util.List;
+
 public class Preteur implements IPreteur {
 
     PreteurDao dao;
@@ -20,6 +22,11 @@ public class Preteur implements IPreteur {
     @Override
     public Result<Boolean> createUser(User user) {
         return dao.createUser(user);
+    }
+
+    @Override
+    public Result<List<String>> getAllUsers() {
+        return dao.getAllUsers();
     }
 
     @Override

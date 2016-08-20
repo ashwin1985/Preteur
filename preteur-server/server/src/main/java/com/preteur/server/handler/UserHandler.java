@@ -26,6 +26,8 @@ public class UserHandler implements Handler{
                 }
             });
 
+        } else if(ctx.getRequest().getMethod().isGet()) {
+            ctx.getResponse().status(200).send(iuser.getAllUsers().getContent());
         }
     }
 }
