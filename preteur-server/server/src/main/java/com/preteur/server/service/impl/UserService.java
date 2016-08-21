@@ -7,6 +7,7 @@ import com.preteur.repo.orientdb.result.Result;
 import com.preteur.server.dto.ResponseBody;
 import com.preteur.server.dto.User;
 import com.preteur.server.service.IUserService;
+import rx.Observable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,27 +22,27 @@ public class UserService implements IUserService {
     }
 
     @Override
-    public boolean createUser(User user) {
-        Result<Boolean> result = ipreteur.createUser(userToRepoUser(user));
+    public Observable<Boolean> createUser(User user) {
+        return Observable.just(ipreteur.createUser(userToRepoUser(user))).map(result -> {
+            if(!result.isStatus()) {
+                //TODO: log the message using logger & throw exception
+                System.out.println(result.getFailureReason());
+            }
 
-        if(!result.isStatus()) {
-            System.out.println(result.getFailureReason());
-        }
-
-        return result.isStatus();
+            return true;
+        });
     }
 
     @Override
-    public ResponseBody<List<String>> getAllUsers() {
-        Result<List<String>> result = ipreteur.getAllUsers();
+    public Observable<List<String>> getAllUsers() {
+        return Observable.just(ipreteur.getAllUsers()).map(result -> {
+            if(!result.isStatus()) {
+                //TODO: log the message using logger & throw exception
+                System.out.println(result.getFailureReason());
+            }
 
-        if(!result.isStatus()) {
-            System.out.println(result.getFailureReason());
-        }
-
-        return result.getResult() == null
-                ? new ResponseBody<>(new ArrayList())
-                : new ResponseBody<>(result.getResult());
+            return result.getResult();
+        });
     }
 
     public com.preteur.repo.orientdb.model.User userToRepoUser(User user) {

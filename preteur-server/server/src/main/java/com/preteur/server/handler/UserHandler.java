@@ -2,6 +2,7 @@ package com.preteur.server.handler;
 
 import javax.inject.Inject;
 import com.preteur.server.dto.User;
+import com.preteur.server.mapper.ResponseMapper;
 import com.preteur.server.service.IUserService;
 import ratpack.handling.Context;
 import ratpack.handling.Handler;
@@ -17,17 +18,21 @@ public class UserHandler implements Handler{
 
     @Override
     public void handle(Context ctx) throws Exception {
-        if(ctx.getRequest().getMethod().isPost()) {
-            ctx.parse(User.class).then(u -> {
-                if(iuser.createUser(u)) {
-                    ctx.getResponse().status(200).send();
-                } else {
-                    ctx.getResponse().status(400).send();
-                }
-            });
+        ctx.byMethod(methodSpec -> {
+            methodSpec.post(() -> ctx.parse(User.class)
+                    .then(user -> createUser(ctx, user)));
 
-        } else if(ctx.getRequest().getMethod().isGet()) {
-            ctx.getResponse().status(200).send(iuser.getAllUsers().getContent());
-        }
+            methodSpec.get(() -> getAllUsers(ctx));
+        });
     }
+
+    private void createUser(Context ctx, User user) {
+        //TODO: validate the user request
+        new ResponseMapper().handleResponse(ctx, iuser.createUser(user), false);
+    }
+
+    private void getAllUsers(Context ctx) {
+        new ResponseMapper().handleResponse(ctx, iuser.getAllUsers(), false);
+    }
+
 }

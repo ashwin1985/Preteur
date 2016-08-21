@@ -2,11 +2,12 @@ package com.preteur.server.service;
 
 import com.preteur.server.dto.ResponseBody;
 import com.preteur.server.dto.User;
+import rx.Observable;
 
 import java.util.List;
 
 public interface IUserService {
 
-    public boolean createUser(User user);
-    public ResponseBody<List<String>> getAllUsers();
+    public Observable<Boolean> createUser(User user);
+    public Observable<List<String>> getAllUsers();
 }
