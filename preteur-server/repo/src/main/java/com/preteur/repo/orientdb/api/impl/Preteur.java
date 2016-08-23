@@ -45,9 +45,10 @@ public class Preteur implements IPreteur {
     }
 
     @Override
-    public Result<Boolean> addUserToCircle(String primaryUser,
-                                           String secondUser,
-                                           Relations.NetworkTypes networkType) {
+    public Result<Boolean>
+        addUserToCircle(String primaryUser,
+                        String secondUser,
+                        Relations.NetworkTypes networkType) {
         return dao.updateNetwork(primaryUser, secondUser, networkType);
     }
 

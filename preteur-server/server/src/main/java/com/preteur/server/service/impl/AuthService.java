@@ -3,8 +3,11 @@ package com.preteur.server.service.impl;
 import com.preteur.repo.orientdb.api.IPreteur;
 import com.preteur.repo.orientdb.dto.TokenInfo;
 import com.preteur.repo.orientdb.result.Result;
+import com.preteur.server.dto.ResponseBody;
 import com.preteur.server.service.IAuthService;
+import com.preteur.server.util.PreteurException;
 import com.preteur.tauth.Authorize;
+import rx.Observable;
 
 import javax.inject.Inject;
 import java.security.SecureRandom;
@@ -69,7 +72,7 @@ public class AuthService implements IAuthService {
     }
 
     @Override
-    public String createToken(String userName) {
+    public Observable<ResponseBody<String>> createToken(String userName) {
         byte[] secret = new byte[64];
 
         SecureRandom random = new SecureRandom();
@@ -79,25 +82,31 @@ public class AuthService implements IAuthService {
 
         Date expiry = new Date(new Date().getTime() + (1800 * 1000));
 
-        Result<Boolean> result = ipreteur.updateUserTokenInfo(userName,
-                new TokenInfo(secret, expiry));
+        return Observable.just(ipreteur.updateUserTokenInfo(userName,
+                new TokenInfo(secret, expiry))).map(result -> {
 
-        if(!result.isStatus()) {
-            System.out.println(result.getFailureReason());
-            token = null;
-        }
+            if(!result.isStatus()) {
+                //TODO: Log the error and move the message to properties file
+                System.out.println(result.getFailureReason());
+                throw new PreteurException("Creating token failed");
+            }
 
-        return token;
+            return new ResponseBody<>(token);
+        });
     }
 
     @Override
-    public boolean removeToken(String userName) {
-        Result<Boolean> result = ipreteur.updateUserTokenInfo(userName, new TokenInfo());
+    public Observable<Boolean> removeToken(String userName) {
+        return Observable.just(ipreteur.updateUserTokenInfo(userName,
+                new TokenInfo())).map(result -> {
 
-        if(!result.isStatus()) {
-            System.out.println(result.getFailureReason());
-        }
+            if(!result.isStatus()) {
+                //TODO: Log the error and move the message to properties file
+                System.out.println(result.getFailureReason());
+                throw new PreteurException("Deleting token failed");
+            }
 
-        return result.isStatus();
+            return true;
+        });
     }
 }

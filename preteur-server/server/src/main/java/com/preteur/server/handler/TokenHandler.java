@@ -1,7 +1,10 @@
 package com.preteur.server.handler;
 
+import com.preteur.server.mapper.ResponseMapper;
 import com.preteur.server.service.IAuthService;
 import com.preteur.server.util.Helper;
+import ratpack.exec.Execution;
+import ratpack.exec.Promise;
 import ratpack.handling.Context;
 import ratpack.handling.Handler;
 
@@ -20,32 +23,40 @@ public class TokenHandler implements Handler {
     public void handle(Context ctx) throws Exception {
         if(ctx.getRequest().getMethod().isPost()) {
             String auth = ctx.getRequest().getHeaders().get("Authorization");
-            boolean success = false;
 
             if(ctx.getRequest().getPath().equals("login")) {
-                String[] values = Helper.parseAuthHeader(auth, false);
-                if(values != null && values.length == 2) {
-                    String token = iauth.createToken(values[0]);
-                    if(token != null && !token.isEmpty()) {
-                        success = true;
-                        ctx.getResponse().status(200).send("application/json", "{ \"token\":"
-                                + "\""+ token +"\" }");
-                    }
-                }
+                login(ctx, auth);
             } else if(ctx.getRequest().getPath().equals("logout")) {
-                String[] values = Helper.parseAuthHeader(auth, true);
-                if(values != null) {
-                    if(iauth.removeToken(values[0])) {
-                        success = true;
-                        ctx.getResponse().status(200).send();
-                    }
-                }
-            }
-
-            if(!success) {
-                ctx.getResponse().status(400).send();
+                logout(ctx, auth);
             }
         }
+    }
 
+    private void login(Context ctx, String auth) {
+        String[] values = Helper.parseAuthHeader(auth, false);
+
+        if(values != null && values.length == 2) {
+            Promise.async(downstream ->
+                    Execution.fork().start(execution ->
+                            downstream.success(iauth.createToken(values[0]))))
+                    .then(result -> new ResponseMapper()
+                            .handleResponse(ctx, (rx.Observable) result, true));
+        } else {
+            ctx.getResponse().status(400).send();
+        }
+    }
+
+    private void logout(Context ctx, String auth) {
+        String[] values = Helper.parseAuthHeader(auth, true);
+
+        if(values != null) {
+            Promise.async(downstream ->
+                    Execution.fork().start(execution ->
+                            downstream.success(iauth.removeToken(values[0]))))
+                    .then(result -> new ResponseMapper()
+                            .handleResponse(ctx, (rx.Observable) result, false));
+        } else {
+            ctx.getResponse().status(400).send();
+        }
     }
 }

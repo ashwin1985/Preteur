@@ -4,6 +4,8 @@ import javax.inject.Inject;
 import com.preteur.server.dto.User;
 import com.preteur.server.mapper.ResponseMapper;
 import com.preteur.server.service.IUserService;
+import ratpack.exec.Execution;
+import ratpack.exec.Promise;
 import ratpack.handling.Context;
 import ratpack.handling.Handler;
 
@@ -28,11 +30,19 @@ public class UserHandler implements Handler{
 
     private void createUser(Context ctx, User user) {
         //TODO: validate the user request
-        new ResponseMapper().handleResponse(ctx, iuser.createUser(user), false);
+        Promise.async(downstream ->
+                Execution.fork().start(execution ->
+                        downstream.success(iuser.createUser(user))))
+                .then(result -> new ResponseMapper()
+                        .handleResponse(ctx, (rx.Observable) result, false));
     }
 
     private void getAllUsers(Context ctx) {
-        new ResponseMapper().handleResponse(ctx, iuser.getAllUsers(), false);
+        Promise.async(downstream ->
+                Execution.fork().start(execution ->
+                        downstream.success(iuser.getAllUsers())))
+                .then(result -> new ResponseMapper()
+                        .handleResponse(ctx, (rx.Observable) result, true));
     }
 
 }

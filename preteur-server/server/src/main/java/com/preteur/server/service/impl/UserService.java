@@ -7,6 +7,7 @@ import com.preteur.repo.orientdb.result.Result;
 import com.preteur.server.dto.ResponseBody;
 import com.preteur.server.dto.User;
 import com.preteur.server.service.IUserService;
+import com.preteur.server.util.PreteurException;
 import rx.Observable;
 
 import java.util.ArrayList;
@@ -25,8 +26,9 @@ public class UserService implements IUserService {
     public Observable<Boolean> createUser(User user) {
         return Observable.just(ipreteur.createUser(userToRepoUser(user))).map(result -> {
             if(!result.isStatus()) {
-                //TODO: log the message using logger & throw exception
+                //TODO: Log the error and move the message to properties file
                 System.out.println(result.getFailureReason());
+                throw new PreteurException("Creating user failed");
             }
 
             return true;
@@ -37,8 +39,9 @@ public class UserService implements IUserService {
     public Observable<List<String>> getAllUsers() {
         return Observable.just(ipreteur.getAllUsers()).map(result -> {
             if(!result.isStatus()) {
-                //TODO: log the message using logger & throw exception
+                //TODO: Log the error and move the message to properties file
                 System.out.println(result.getFailureReason());
+                throw new PreteurException("Getting all users failed");
             }
 
             return result.getResult();

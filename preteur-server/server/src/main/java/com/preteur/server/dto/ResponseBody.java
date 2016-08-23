@@ -14,7 +14,7 @@ public class ResponseBody<T> {
         return result;
     }
 
-    public String getContent() throws JsonProcessingException {
-        return Helper.convertObjectToJson(this);
-    }
+//    public String getContent() throws JsonProcessingException {
+//        return Helper.convertObjectToJson(this);
+//    }
 }
