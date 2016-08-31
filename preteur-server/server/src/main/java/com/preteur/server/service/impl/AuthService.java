@@ -38,7 +38,7 @@ public class AuthService implements IAuthService {
             return false;
         }
 
-        return password.equals(ps);
+        return new Authorize().isPasswordValid(password, ps);
     }
 
     @Override

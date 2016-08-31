@@ -1,6 +1,7 @@
 package com.preteur.tauth;
 
 import io.jsonwebtoken.*;
+import org.springframework.security.crypto.bcrypt.BCrypt;
 
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
@@ -33,4 +34,15 @@ public class Authorize implements IAuthorize {
 
         return result;
     }
+
+    public String getHashedPassword(String password) {
+        return BCrypt.hashpw(password, BCrypt.gensalt());
+    }
+
+    public boolean isPasswordValid(String password, String storedPassword) {
+        return BCrypt.checkpw(password, storedPassword);
+    }
+
+
+
 }

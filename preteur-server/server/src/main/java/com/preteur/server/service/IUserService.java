@@ -8,6 +8,6 @@ import java.util.List;
 
 public interface IUserService {
 
-    public Observable<Boolean> createUser(User user);
+    public Observable<Boolean> createUser(String ipaddress, User user);
     public Observable<List<String>> getAllUsers();
 }

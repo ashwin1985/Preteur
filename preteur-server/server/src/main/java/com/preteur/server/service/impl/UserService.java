@@ -8,6 +8,7 @@ import com.preteur.server.dto.ResponseBody;
 import com.preteur.server.dto.User;
 import com.preteur.server.service.IUserService;
 import com.preteur.server.util.PreteurException;
+import com.preteur.tauth.Authorize;
 import rx.Observable;
 
 import java.util.ArrayList;
@@ -23,8 +24,8 @@ public class UserService implements IUserService {
     }
 
     @Override
-    public Observable<Boolean> createUser(User user) {
-        return Observable.just(ipreteur.createUser(userToRepoUser(user))).map(result -> {
+    public Observable<Boolean> createUser(String ipAddress, User user) {
+        return Observable.just(ipreteur.createUser(userToRepoUser(ipAddress, user))).map(result -> {
             if(!result.isStatus()) {
                 //TODO: Log the error and move the message to properties file
                 System.out.println(result.getFailureReason());
@@ -48,12 +49,12 @@ public class UserService implements IUserService {
         });
     }
 
-    public com.preteur.repo.orientdb.model.User userToRepoUser(User user) {
+    public com.preteur.repo.orientdb.model.User userToRepoUser(String ipAddress, User user) {
         com.preteur.repo.orientdb.model.User ru = new com.preteur.repo.orientdb.model.User();
         ru.setFristName(user.getFirstName());
         ru.setLastName(user.getLastName());
-        ru.setIpAddress("");
-        ru.setPassword(user.getPassword());
+        ru.setIpAddress(ipAddress);
+        ru.setPassword(new Authorize().getHashedPassword(user.getPassword()));
         ru.setPhone(user.getPhone());
         ru.setEmailAddress(user.getEmail());
 
