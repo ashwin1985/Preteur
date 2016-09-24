@@ -9,12 +9,12 @@ allprojects {
 }
 
 subprojects {
-  apply plugin: 'java'
+    apply plugin: 'java'
 
-  dependencies {
-      //test
-      testCompile "junit:junit:4.11"
-  }
+    dependencies {
+        //test
+        testCompile "junit:junit:4.11"
+    }
 }
 
 task wrapper(type: Wrapper) {

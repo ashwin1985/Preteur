@@ -4,12 +4,12 @@ import javax.inject.Inject;
 import com.preteur.server.dto.User;
 import com.preteur.server.mapper.ResponseMapper;
 import com.preteur.server.service.IUserService;
+import ratpack.exec.Blocking;
 import ratpack.exec.Execution;
 import ratpack.exec.Promise;
 import ratpack.handling.Context;
 import ratpack.handling.Handler;
 import ratpack.server.PublicAddress;
-import sun.net.spi.nameservice.dns.DNSNameService;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -39,11 +39,20 @@ public class UserHandler implements Handler{
         String clientHost = address.get().getHost();
         InetAddress inetAddress = InetAddress.getByName(clientHost);
         String ipAddress = inetAddress.getHostAddress();
-        Promise.async(downstream ->
-                Execution.fork().start(execution ->
-                        downstream.success(iuser.createUser(ipAddress, user))))
-                .then(result -> new ResponseMapper()
-                        .handleResponse(ctx, (rx.Observable) result, false));
+//        Promise.async(downstream ->
+//                Execution.fork().start(execution ->
+//                        downstream.success(iuser.createUser(ipAddress, user))))
+//                .then(result -> new ResponseMapper()
+//                        .handleResponse(ctx, (rx.Observable) result, false));
+
+        Promise.async(downstream -> {
+            new Thread(() -> downstream.success(iuser.createUser(ipAddress, user))).start();
+        }).then(result -> new ResponseMapper().handleResponse(ctx, (rx.Observable) result, false));
+
+//        Blocking.exec(() -> {
+//            new ResponseMapper()
+//                    .handleResponse(ctx, iuser.createUser(ipAddress, user), false);
+//        });
     }
 
     private void getAllUsers(Context ctx) {

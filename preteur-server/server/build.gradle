@@ -9,8 +9,21 @@ buildscript {
 }
 
 apply plugin: "io.ratpack.ratpack-java"
+apply plugin: "scala"
 
 mainClassName="com.preteur.server.App"
+
+sourceSets {
+    testPerformance {
+        scala {
+            srcDir 'src/test/performance/scala'
+        }
+
+        compileClasspath += main.output + test.output
+        runtimeClasspath += main.output + test.output
+        resources.srcDir 'src/test/performance/resources'
+    }
+}
 
 dependencies {
     compile project(":repo")
@@ -22,4 +35,19 @@ dependencies {
     compile 'commons-codec:commons-codec:1.9'
     compile 'org.json:json:20160212'
     runtime 'org.slf4j:slf4j-simple:1.7.10'
+
+    //performance test
+    compile 'io.gatling.highcharts:gatling-charts-highcharts:2.2.2'
+    compile 'org.scala-lang:scala-library:2.11.8'
+    testPerformanceCompile configurations.testCompile
+    testPerformanceRuntime configurations.testRuntime
+}
+
+task testPerformance(type: JavaExec) {
+    main = 'io.gatling.app.Gatling'
+    classpath = sourceSets.testPerformance.runtimeClasspath
+    environment GATLING_HOME: ''
+
+    String simulation = 'simulation.SignupSimulation'
+    args '-m', '-s', simulation, '-rf', 'build/reports/test/performance'
 }
