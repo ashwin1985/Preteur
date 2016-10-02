@@ -1,8 +1,5 @@
 package com.preteur.server.dto;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.preteur.repo.orientdb.util.Helper;
-
 public class ResponseBody<T> {
     T result;
 

@@ -1,8 +1,8 @@
 package com.preteur.server.service.impl;
 
-import com.preteur.repo.orientdb.api.IPreteur;
-import com.preteur.repo.orientdb.dto.TokenInfo;
-import com.preteur.repo.orientdb.result.Result;
+import com.preteur.repo.api.IPreteur;
+import com.preteur.repo.dto.TokenInfo;
+import com.preteur.repo.result.Result;
 import com.preteur.server.dto.ResponseBody;
 import com.preteur.server.service.IAuthService;
 import com.preteur.server.util.PreteurException;

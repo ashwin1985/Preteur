@@ -1,11 +1,11 @@
-package com.preteur.repo.orientdb.api.impl;
+package com.preteur.repo.orientdb;
 
-import com.preteur.repo.orientdb.api.IPreteur;
+import com.preteur.repo.api.IPreteur;
 import com.preteur.repo.orientdb.dao.PreteurDao;
-import com.preteur.repo.orientdb.dto.TokenInfo;
-import com.preteur.repo.orientdb.model.Relations;
-import com.preteur.repo.orientdb.model.User;
-import com.preteur.repo.orientdb.result.Result;
+import com.preteur.repo.dto.TokenInfo;
+import com.preteur.repo.model.Relations;
+import com.preteur.repo.model.User;
+import com.preteur.repo.result.Result;
 
 import java.util.List;
 

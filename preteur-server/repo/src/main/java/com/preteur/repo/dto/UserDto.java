@@ -1,6 +1,6 @@
-package com.preteur.repo.orientdb.dto;
+package com.preteur.repo.dto;
 
-import com.preteur.repo.orientdb.model.User;
+import com.preteur.repo.model.User;
 
 public class UserDto {
 

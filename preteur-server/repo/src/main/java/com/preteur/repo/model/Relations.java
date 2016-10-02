@@ -1,4 +1,4 @@
-package com.preteur.repo.orientdb.model;
+package com.preteur.repo.model;
 
 public interface Relations {
     

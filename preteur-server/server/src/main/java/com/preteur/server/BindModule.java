@@ -1,8 +1,8 @@
 package com.preteur.server;
 
 import com.google.inject.AbstractModule;
-import com.preteur.repo.orientdb.api.IPreteur;
-import com.preteur.repo.orientdb.api.impl.Preteur;
+import com.preteur.repo.api.IPreteur;
+import com.preteur.repo.orientdb.Preteur;
 import com.preteur.server.handler.*;
 import com.preteur.server.service.IAuthService;
 import com.preteur.server.service.IUserService;

@@ -9,4 +9,6 @@ dependencies {
     compile "com.orientechnologies:orientdb-object:2.2.4"
     compile "com.orientechnologies:orientdb-server:2.2.4"
     compile "com.orientechnologies:orientdb-tools:2.2.4"
+
+    compile "com.arangodb:arangodb-java-driver:3.0.3"
 }

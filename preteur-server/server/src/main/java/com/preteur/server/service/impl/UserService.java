@@ -2,16 +2,13 @@ package com.preteur.server.service.impl;
 
 import javax.inject.Inject;
 
-import com.preteur.repo.orientdb.api.IPreteur;
-import com.preteur.repo.orientdb.result.Result;
-import com.preteur.server.dto.ResponseBody;
+import com.preteur.repo.api.IPreteur;
 import com.preteur.server.dto.User;
 import com.preteur.server.service.IUserService;
 import com.preteur.server.util.PreteurException;
 import com.preteur.tauth.Authorize;
 import rx.Observable;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class UserService implements IUserService {
@@ -49,8 +46,8 @@ public class UserService implements IUserService {
         });
     }
 
-    public com.preteur.repo.orientdb.model.User userToRepoUser(String ipAddress, User user) {
-        com.preteur.repo.orientdb.model.User ru = new com.preteur.repo.orientdb.model.User();
+    public com.preteur.repo.model.User userToRepoUser(String ipAddress, User user) {
+        com.preteur.repo.model.User ru = new com.preteur.repo.model.User();
         ru.setFristName(user.getFirstName());
         ru.setLastName(user.getLastName());
         ru.setIpAddress(ipAddress);

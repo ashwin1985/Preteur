@@ -1,15 +1,11 @@
-package com.preteur.repo.orientdb.api;
+package com.preteur.repo.api;
 
-import com.preteur.repo.orientdb.dto.TokenInfo;
-import com.preteur.repo.orientdb.dto.UserDto;
-import com.preteur.repo.orientdb.model.Relations;
-import com.preteur.repo.orientdb.model.User;
-import com.preteur.repo.orientdb.result.Result;
+import com.preteur.repo.dto.TokenInfo;
+import com.preteur.repo.model.Relations;
+import com.preteur.repo.model.User;
+import com.preteur.repo.result.Result;
 
-import java.math.BigDecimal;
-import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 public interface IPreteur {
 

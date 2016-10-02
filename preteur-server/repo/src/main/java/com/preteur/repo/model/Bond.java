@@ -1,6 +1,5 @@
-package com.preteur.repo.orientdb.model;
+package com.preteur.repo.model;
 
-import java.math.BigDecimal;
 import java.util.Date;
 
 public class Bond {

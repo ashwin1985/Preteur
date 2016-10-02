@@ -1,6 +1,6 @@
 package com.preteur.repo.orientdb.transaction;
 
-import com.preteur.repo.orientdb.result.Result;
+import com.preteur.repo.result.Result;
 import com.tinkerpop.blueprints.impls.orient.OrientGraph;
 import com.tinkerpop.blueprints.impls.orient.OrientGraphFactory;
 

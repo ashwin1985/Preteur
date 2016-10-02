@@ -1,4 +1,4 @@
-package com.preteur.repo.orientdb.result;
+package com.preteur.repo.result;
 
 public class Result<T> {
 

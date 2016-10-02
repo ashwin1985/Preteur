@@ -12,6 +12,9 @@ subprojects {
     apply plugin: 'java'
 
     dependencies {
+        //dev
+        compile "io.reactivex:rxjava:1.2.0"
+
         //test
         testCompile "junit:junit:4.11"
     }

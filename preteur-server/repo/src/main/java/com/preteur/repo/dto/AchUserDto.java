@@ -1,4 +1,4 @@
-package com.preteur.repo.orientdb.dto;
+package com.preteur.repo.dto;
 
 import java.util.Date;
 
