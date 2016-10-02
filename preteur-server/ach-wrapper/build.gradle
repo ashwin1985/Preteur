@@ -1,4 +1,4 @@
 dependencies {
     //dev
-    compile "io.swagger:dwolla-swagger-java:1.0.0"
+    //compile "io.swagger:dwolla-swagger-java:1.0.0"
 }
